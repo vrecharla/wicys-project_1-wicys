@@ -1,17 +1,35 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const eventSchema = new mongoose.Schema(
+const eventSchema = mongoose.Schema(
   {
-    title: { type: String, required: true },
-    date: { type: Date, required: true },
-    description: { type: String },
-    flyerPath: { type: String, default: "" },
-    photos: [{ type: String }],
-    registrationLink: { type: String },
-    isUpcoming: { type: Boolean, default: true }
+    title: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    flyer: {
+      type: String,  // Store file path for flyer image
+    },
+    location: {
+      type: String,
+    },
+    type: {
+      type: String, // Event type like "Workshop", "Seminar"
+    },
+    registrationLink: {
+      type: String,
+    },
+    photos: [String], // For storing uploaded event photos
   },
   { timestamps: true }
 );
 
-const Event = mongoose.model("Event", eventSchema);
+const Event = mongoose.model('Event', eventSchema);
 export default Event;

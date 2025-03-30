@@ -1,4 +1,4 @@
-import Event from "../models/Event.js";
+import Event from '../models/Event.js';
 
 export const getEvents = async (req, res) => {
   try {
@@ -12,8 +12,15 @@ export const getEvents = async (req, res) => {
 export const addEvent = async (req, res) => {
   try {
     const { title, date, description, registrationLink } = req.body;
-    const flyerPath = req.file ? req.file.path : "";
-    const newEvent = new Event({ title, date, description, flyerPath, registrationLink });
+    const flyerPath = req.file ? req.file.path : ''; // Handle flyer image if uploaded
+    const newEvent = new Event({
+      title,
+      date,
+      description,
+      flyer: flyerPath,
+      registrationLink,
+    });
+
     await newEvent.save();
     res.status(201).json(newEvent);
   } catch (err) {
@@ -33,7 +40,7 @@ export const updateEvent = async (req, res) => {
 export const deleteEvent = async (req, res) => {
   try {
     await Event.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Event deleted successfully" });
+    res.status(200).json({ message: 'Event deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -42,7 +49,7 @@ export const deleteEvent = async (req, res) => {
 export const uploadPhotos = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
-    event.photos.push(...req.files.map(file => file.path));
+    event.photos.push(...req.files.map(file => file.path)); // Adding photo paths to event
     await event.save();
     res.status(200).json(event);
   } catch (err) {
