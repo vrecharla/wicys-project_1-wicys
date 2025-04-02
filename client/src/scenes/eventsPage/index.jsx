@@ -1,117 +1,105 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import axios from "axios";
+import { Button, Card, CardContent, Typography, Box, Select, MenuItem } from "@mui/material";
+import { Add } from "@mui/icons-material";
+import "./eventsPage.css";
 
-const EventCalendar = ({ onSelectDate }) => {
-  const [events, setEvents] = useState([]);
+
+const EventsPage = () => {
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [pastEvents, setPastEvents] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [calendarEvents, setCalendarEvents] = useState([]);
+  const isAdmin = useSelector((state) => state.role === "admin");
 
   useEffect(() => {
-    axios.get("/api/events").then((response) => setEvents(response.data));
-  }, []);
+    fetchEvents();
+  }, [selectedYear]);
 
-  const tileContent = ({ date, view }) => {
-    if (view === "month") {
-      const eventForDate = events.find(
-        (event) => new Date(event.date).toDateString() === date.toDateString()
-      );
-      return eventForDate ? <span className="event-indicator">●</span> : null;
+  const fetchEvents = async () => {
+    try {
+      const upcomingRes = await fetch("http://localhost:3001/events/upcoming");
+      const pastRes = await fetch(`http://localhost:3001/events/past?year=${selectedYear}`);
+
+      if (!upcomingRes.ok) throw new Error("Failed to fetch upcoming events");
+      if (!pastRes.ok) throw new Error("Failed to fetch past events");
+
+      const upcomingData = await upcomingRes.json();
+      const pastData = await pastRes.json();
+
+      setUpcomingEvents(upcomingData || []);
+      setPastEvents(pastData || []);
+      setCalendarEvents([...upcomingData, ...pastData]);
+    } catch (error) {
+      console.error("Error fetching events:", error);
     }
   };
 
-  return <Calendar onClickDay={onSelectDate} tileContent={tileContent} />;
-};
-
-const UpcomingEvents = () => {
-  const [upcomingEvents, setUpcomingEvents] = useState([]);
-
-  useEffect(() => {
-    axios.get("/api/events/upcoming").then((response) => setUpcomingEvents(response.data));
-  }, []);
+  const handleYearChange = (event) => setSelectedYear(event.target.value);
 
   return (
-    <div>
-      <h2>Upcoming Events</h2>
-      {upcomingEvents.map((event) => (
-        <div key={event._id} className="event-card">
-          <h3>{event.title}</h3>
-          <p>{event.date}</p>
-          <p>{event.description}</p>
-          {event.flyer && <img src={event.flyer} alt="Event Flyer" />}
-          <a href={event.registrationLink}>Register</a>
-        </div>
-      ))}
-    </div>
-  );
-};
+    <Box p={2}>
+      {isAdmin && (
+        <Button startIcon={<Add />} variant="contained" color="primary">
+          Create Event
+        </Button>
+      )}
 
-const PastEvents = () => {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [pastEvents, setPastEvents] = useState([]);
+      {/* Upcoming Events Section */}
+      <Typography variant="h5" mt={2}>Upcoming Events</Typography>
+      <Box sx={{ display: "flex", overflowX: "auto", gap: 2, p: 1 }}>
+        {upcomingEvents.length > 0 ? (
+          upcomingEvents.map(event => (
+            <Card key={event._id} sx={{ minWidth: 250 }}>
+              <CardContent>
+                <Typography variant="h6">{event.title}</Typography>
+                <Typography variant="body2">{new Date(event.date).toLocaleDateString()}</Typography>
+                <Link to={`/event/${event._id}`}>
+                  <Button variant="contained" color="primary">Register</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <Typography>No upcoming events</Typography>
+        )}
+      </Box>
 
-  useEffect(() => {
-    axios.get(`/api/events/past/${selectedYear}`).then((response) => setPastEvents(response.data));
-  }, [selectedYear]);
+      {/* Past Events Section */}
+      <Typography variant="h5" mt={2}>Past Events</Typography>
+      <Select value={selectedYear} onChange={handleYearChange}>
+        {[...Array(10)].map((_, i) => {
+          const year = new Date().getFullYear() - i;
+          return <MenuItem key={year} value={year}>{year}</MenuItem>;
+        })}
+      </Select>
+      <Box sx={{ display: "flex", overflowX: "auto", gap: 2, p: 1 }}>
+        {pastEvents.length > 0 ? (
+          pastEvents.map(event => (
+            <Card key={event._id} sx={{ minWidth: 250 }}>
+              <CardContent>
+                <Typography variant="h6">{event.title}</Typography>
+                <Typography variant="body2">{new Date(event.date).toLocaleDateString()}</Typography>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <Typography>No past events for {selectedYear}</Typography>
+        )}
+      </Box>
 
-  return (
-    <div>
-      <h2>Past Events</h2>
-      <select onChange={(e) => setSelectedYear(e.target.value)}>
-        {[...Array(10)].map((_, i) => (
-          <option key={i} value={new Date().getFullYear() - i}>
-            {new Date().getFullYear() - i}
-          </option>
-        ))}
-      </select>
-      {pastEvents.map((event) => (
-        <div key={event._id} className="event-card">
-          <h3>{event.title}</h3>
-          <p>{event.date}</p>
-          <p>{event.description}</p>
-          {event.photos.map((photo, index) => (
-            <img key={index} src={photo} alt="Event Photo" />
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const EventAdmin = () => {
-  const [eventData, setEventData] = useState({ title: "", date: "", description: "", flyer: null });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    Object.keys(eventData).forEach((key) => formData.append(key, eventData[key]));
-
-    await axios.post("/api/events", formData, { headers: { "Content-Type": "multipart/form-data" } });
-  };
-
-  return (
-    <div>
-      <h2>Admin Panel</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Title" onChange={(e) => setEventData({ ...eventData, title: e.target.value })} />
-        <input type="date" onChange={(e) => setEventData({ ...eventData, date: e.target.value })} />
-        <textarea placeholder="Description" onChange={(e) => setEventData({ ...eventData, description: e.target.value })}></textarea>
-        <input type="file" onChange={(e) => setEventData({ ...eventData, flyer: e.target.files[0] })} />
-        <button type="submit">Add Event</button>
-      </form>
-    </div>
-  );
-};
-
-const EventsPage = () => {
-  const [selectedDate, setSelectedDate] = useState(null);
-
-  return (
-    <div>
-      <EventCalendar onSelectDate={(date) => setSelectedDate(date)} />
-      <UpcomingEvents />
-      <PastEvents />
-      <EventAdmin />
-    </div>
+      {/* Calendar View */}
+      <Typography variant="h5" mt={2}>Calendar View</Typography>
+      <Calendar
+        tileContent={({ date }) => {
+          const event = calendarEvents.find(e => new Date(e.date).toDateString() === date.toDateString());
+          return event ? <Typography fontSize={12}>{event.title}</Typography> : null;
+        }}
+      />
+    </Box>
   );
 };
 

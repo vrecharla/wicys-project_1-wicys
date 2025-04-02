@@ -14,8 +14,8 @@ const eventSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    flyer: {
-      type: String,  // Store file path for flyer image
+    flyers: {
+      type: [String],  // Store file path for flyer image
     },
     location: {
       type: String,
