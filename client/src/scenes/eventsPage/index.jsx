@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { Button, Card, CardContent, Typography, Box, IconButton, useMediaQuery } from "@mui/material";
+import { Button, Card, CardContent, Typography, Box, IconButton, useMediaQuery, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 import { Add, ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 
 const BASE_URL = "http://localhost:3001";
@@ -15,7 +15,8 @@ const EventsPage = () => {
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [currentUpcomingIndex, setCurrentUpcomingIndex] = useState(0);
   const [currentPastIndex, setCurrentPastIndex] = useState(0);
-  const isAdmin = useSelector((state) => state.user?.role === "admin");
+  // const isAdmin = useSelector((state) => state.user?.role === "admin");
+  const isAdmin = true;
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
 
   useEffect(() => {
@@ -43,13 +44,17 @@ const EventsPage = () => {
 
   const handleNextUpcoming = () => setCurrentUpcomingIndex((prev) => (prev + 1) % upcomingEvents.length);
   const handlePrevUpcoming = () => setCurrentUpcomingIndex((prev) => (prev - 1 + upcomingEvents.length) % upcomingEvents.length);
-  
+
   const handleNextPast = () => setCurrentPastIndex((prev) => (prev + 1) % pastEvents.length);
   const handlePrevPast = () => setCurrentPastIndex((prev) => (prev - 1 + pastEvents.length) % pastEvents.length);
 
+  // Handle Year change for Past Events
+  const handleYearChange = (event) => {
+    setSelectedYear(event.target.value);
+  };
+
   return (
     <Box p={2}>
-
       {/* Upcoming Events Section */}
       <Box 
         sx={{
@@ -88,12 +93,15 @@ const EventsPage = () => {
             height: isNonMobileScreens ? "400px" : "auto"
           }}>
             <Box sx={{ width: isNonMobileScreens ? "70%" : "100%", height: "100%" }}>
-              <img 
-                src={upcomingEvents[currentUpcomingIndex]?.flyerUrl || "/default-flyer.jpg"} 
-                alt="Event Flyer" 
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
+              {upcomingEvents[currentUpcomingIndex]?.flyers.map((flyer, index) => (
+                <img key={index}
+                  src={`${BASE_URL}/${flyer.replace(/public\\assets\\/g, "assets/")}`}
+                  alt={`Flyer ${index + 1}`}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              ))}
             </Box>
+
             <CardContent sx={{ width: isNonMobileScreens ? "30%" : "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <Typography variant="h6">{upcomingEvents[currentUpcomingIndex]?.title}</Typography>
               <Typography variant="body2">{upcomingEvents[currentUpcomingIndex]?.description}</Typography>
@@ -114,8 +122,25 @@ const EventsPage = () => {
       )}
 
       {/* Past Events Section */}
+      <Box 
+        sx={{
+          display: "flex",
+          justifyContent: isNonMobileScreens ? "space-between" : "flex-start",
+          flexDirection: isNonMobileScreens ? "row" : "column",
+          alignItems: "flex-start",
+          mb: 2
+        }}
+      >
       <Typography variant="h5" mt={2}>Past Events</Typography>
-      
+      <Select sx={{ mt: isNonMobileScreens ? 0 : 2 }} value={selectedYear} onChange={handleYearChange}>
+        {[...Array(10)].map((_, i) => {
+          const year = new Date().getFullYear() - i;
+          return <MenuItem key={year} value={year}>{year}</MenuItem>;
+        })}
+      </Select>
+      </Box>
+
+
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", mt: 2 }}>
         <IconButton onClick={handlePrevPast}>
           <ArrowBackIos />
@@ -129,12 +154,15 @@ const EventsPage = () => {
             height: isNonMobileScreens ? "400px" : "auto"
           }}>
             <Box sx={{ width: isNonMobileScreens ? "70%" : "100%", height: "100%" }}>
-              <img 
-                src={pastEvents[currentPastIndex]?.flyerUrl || "/default-flyer.jpg"} 
-                alt="Past Event Flyer" 
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
+              {pastEvents[currentPastIndex]?.photos.map((photo, index) => (
+                <img key={index}
+                  src={`${BASE_URL}/${photo}`}
+                  alt={`Photo ${index + 1}`}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              ))}
             </Box>
+
             <CardContent sx={{ width: isNonMobileScreens ? "30%" : "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <Typography variant="h6">{pastEvents[currentPastIndex]?.title}</Typography>
               <Typography variant="body2">{pastEvents[currentPastIndex]?.description}</Typography>
@@ -158,7 +186,6 @@ const EventsPage = () => {
           }}
         />
       </Box>
-
     </Box>
   );
 };
