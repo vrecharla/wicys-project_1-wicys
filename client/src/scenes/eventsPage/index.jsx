@@ -3,8 +3,10 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { Button, Card, CardContent, Typography, Box, IconButton, useMediaQuery, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import { Button, Card, CardContent, Typography, Box, IconButton, useMediaQuery, MenuItem, Select, FormControl, InputLabel, useTheme} from "@mui/material";
 import { Add, ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import WidgetWrapper from "components/WidgetWrapper";
+
 
 const BASE_URL = "http://localhost:3001";
 
@@ -18,6 +20,10 @@ const EventsPage = () => {
   // const isAdmin = useSelector((state) => state.user?.role === "admin");
   const isAdmin = true;
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
+  const { palette } = useTheme();
+  const dark = palette.neutral.dark;
+  const primary = palette.primary.main;
+  
 
   useEffect(() => {
     fetchEvents();
@@ -55,19 +61,7 @@ const EventsPage = () => {
 
   return (
     <Box p={2}>
-      {/* Upcoming Events Section */}
-      <Box 
-        sx={{
-          display: "flex",
-          justifyContent: isNonMobileScreens ? "space-between" : "flex-start",
-          flexDirection: isNonMobileScreens ? "row" : "column",
-          alignItems: "flex-start",
-          mb: 2
-        }}
-      >
-        <Typography variant="h5">Upcoming Events</Typography>
-        
-        {isAdmin && (
+      {isAdmin && (
           <Button 
             startIcon={<Add />} 
             variant="contained" 
@@ -77,6 +71,20 @@ const EventsPage = () => {
             Create Event
           </Button>
         )}
+      {/* Upcoming Events Section */}
+      <WidgetWrapper m="2rem 0">
+
+      <Box 
+        sx={{
+          display: "flex",
+          justifyContent: isNonMobileScreens ? "space-between" : "flex-start",
+          flexDirection: isNonMobileScreens ? "row" : "column",
+          alignItems: "flex-start",
+          mb: 2
+        }}
+      >
+        <Typography variant="h2" fontWeight="500" color={dark} sx={{ mt: "1rem" }}>Upcoming Events</Typography>
+        
       </Box>
 
       {/* Single Upcoming Event Display */}
@@ -120,8 +128,13 @@ const EventsPage = () => {
           </IconButton>
         </Box>
       )}
+      </WidgetWrapper>
+
 
       {/* Past Events Section */}
+
+      <WidgetWrapper m="2rem 0">
+
       <Box 
         sx={{
           display: "flex",
@@ -131,8 +144,8 @@ const EventsPage = () => {
           mb: 2
         }}
       >
-      <Typography variant="h5" mt={2}>Past Events</Typography>
-      <Select sx={{ mt: isNonMobileScreens ? 0 : 2 }} value={selectedYear} onChange={handleYearChange}>
+        <Typography variant="h2" fontWeight="500" color={dark} sx={{ mt: "1rem" }}>Past Events</Typography>
+        <Select sx={{ mt: isNonMobileScreens ? 0 : 2 }} value={selectedYear} onChange={handleYearChange}>
         {[...Array(10)].map((_, i) => {
           const year = new Date().getFullYear() - i;
           return <MenuItem key={year} value={year}>{year}</MenuItem>;
@@ -175,9 +188,24 @@ const EventsPage = () => {
           <ArrowForwardIos />
         </IconButton>
       </Box>
+      </WidgetWrapper>
+
 
       {/* Calendar View */}
-      <Typography variant="h5" mt={2}>Calendar View</Typography>
+      <WidgetWrapper m="2rem 0">
+
+      <Box 
+        sx={{
+          display: "flex",
+          justifyContent: isNonMobileScreens ? "space-between" : "flex-start",
+          flexDirection: isNonMobileScreens ? "row" : "column",
+          alignItems: "flex-start",
+          mb: 2
+        }}
+      >
+
+      <Typography variant="h2" fontWeight="500" color={dark} sx={{ mt: "1rem" }}>Calendar View</Typography>
+      </Box>
       <Box sx={{ width: "80%", margin: "0 auto" }}>
         <Calendar sx={{ width: "80%", margin: "0 auto" }}
           tileContent={({ date }) => {
@@ -185,8 +213,11 @@ const EventsPage = () => {
             return event ? <Typography fontSize={12}>{event.title}</Typography> : null;
           }}
         />
+  
       </Box>
+      </WidgetWrapper>
     </Box>
+
   );
 };
 
