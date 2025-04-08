@@ -17,7 +17,7 @@ const EventsPage = () => {
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [currentUpcomingIndex, setCurrentUpcomingIndex] = useState(0);
   const [currentPastIndex, setCurrentPastIndex] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   // const isAdmin = useSelector((state) => state.user?.role === "admin");
   const isAdmin = true;
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
@@ -258,12 +258,94 @@ const EventsPage = () => {
       <Typography variant="h2" fontWeight="500" color={dark} sx={{ mt: "1rem" }}>Calendar View</Typography>
       </Box>
       <Box sx={{ width: "80%", margin: "0 auto" }}>
-        <Calendar sx={{ width: "80%", margin: "0 auto" }}
-        tileContent={({ date }) => {
-          const event = calendarEvents.find(e => new Date(e.date).toDateString() === date.toDateString());
-          return event ? <Typography fontSize={12}>{event.title}</Typography> : null;
-        }}
-      />
+      {selectedDate && (
+          <Box 
+            sx={{ 
+              mt: 4, 
+              display: "flex", 
+              flexDirection: isNonMobileScreens ? "row" : "column", 
+              gap: 2 
+            }}
+          >
+            <Box sx={{ width: isNonMobileScreens ? "50%" : "100%" }}>
+            <Box
+              sx={{
+                width: "100%",
+                maxWidth: 500,
+                backgroundColor: palette.background.paper,
+                borderRadius: 2,
+                p: 2,
+                boxShadow: 3,
+                fontFamily: "Roboto, sans-serif", // MUI default font
+                "& .react-calendar": {
+                  width: "100%",
+                  border: "none",
+                  fontFamily: "inherit",
+                },
+                "& .react-calendar__tile": {
+                  padding: "0.75rem 0.5rem",
+                  borderRadius: 1,
+                  transition: "all 0.2s ease-in-out",
+                  fontSize: "0.875rem",
+                  "&:hover": {
+                    backgroundColor: palette.action.hover,
+                  },
+                },
+                "& .react-calendar__tile--active": {
+                  backgroundColor: primary,
+                  color: "#000",
+                },
+                "& .react-calendar__tile--now": {
+                  backgroundColor: palette.secondary.light,
+                  fontWeight: "bold",
+                },
+                "& .react-calendar__navigation button": {
+                  color: primary,
+                  fontWeight: "bold",
+                  fontSize: "1rem",
+                  "&:hover": {
+                    backgroundColor: palette.action.hover,
+                  },
+                },
+              }}
+            >
+              <Calendar
+                onClickDay={(date) => setSelectedDate(date)}
+                tileContent={({ date }) => {
+                  const event = calendarEvents.find(
+                    (e) => new Date(e.date).toDateString() === date.toDateString()
+                  );
+                  return event ? (
+                    <Typography fontSize={10} color="primary">
+                      {event.title}
+                    </Typography>
+                  ) : null;
+                }}
+              />
+            </Box>
+            </Box>
+
+            <Box sx={{ width: isNonMobileScreens ? "50%" : "100%", p: 2, border: `1px solid ${dark}`, borderRadius: 2 }}>
+              {calendarEvents.some(e => new Date(e.date).toDateString() === selectedDate.toDateString()) ? (
+                calendarEvents
+                  .filter(e => new Date(e.date).toDateString() === selectedDate.toDateString())
+                  .map((event, index) => (
+                    <Card key={index} sx={{ mb: 2 }}>
+                      <CardContent>
+                        <Typography variant="h6">{event.title}</Typography>
+                        <Typography variant="body2">{event.description}</Typography>
+                        <Typography variant="caption">
+                          {new Date(event.date).toLocaleDateString()}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  ))
+              ) : (
+                <Typography>No events on this date.</Typography>
+              )}
+            </Box>
+          </Box>
+        )}
 
       </Box>
       </WidgetWrapper>
