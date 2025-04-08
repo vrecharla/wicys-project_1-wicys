@@ -17,6 +17,7 @@ const EventsPage = () => {
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [currentUpcomingIndex, setCurrentUpcomingIndex] = useState(0);
   const [currentPastIndex, setCurrentPastIndex] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(null);
   // const isAdmin = useSelector((state) => state.user?.role === "admin");
   const isAdmin = true;
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
@@ -89,10 +90,23 @@ const EventsPage = () => {
 
       {/* Single Upcoming Event Display */}
       {upcomingEvents.length > 0 && (
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
-          <IconButton onClick={handlePrevUpcoming}>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", gap: 2 }}>
+          <IconButton
+            onClick={handlePrevUpcoming}
+            sx={{
+              backgroundColor: primary,
+              color: "#fff",
+              borderRadius: "50%",
+              "&:hover": {
+                backgroundColor: dark,
+              },
+              m: 1,
+            }}
+            >
             <ArrowBackIos />
-          </IconButton>
+            </IconButton>
+            
+          
 
           <Card sx={{
             display: "flex",
@@ -115,7 +129,6 @@ const EventsPage = () => {
               <Typography variant="body2">{upcomingEvents[currentUpcomingIndex]?.description}</Typography>
               <Typography variant="body2">{new Date(upcomingEvents[currentUpcomingIndex]?.date).toLocaleDateString()}</Typography>
               <Box mt={2}>
-                <Button variant="contained" color="primary">Register</Button>
                 <Link to={`/event/${upcomingEvents[currentUpcomingIndex]?._id}`}>
                   <Button sx={{ ml: 1 }} variant="outlined">More Info</Button>
                 </Link>
@@ -123,7 +136,18 @@ const EventsPage = () => {
             </CardContent>
           </Card>
 
-          <IconButton onClick={handleNextUpcoming}>
+          <IconButton
+            onClick={handleNextUpcoming}
+            sx={{
+              backgroundColor: primary,
+              color: "#fff",
+              borderRadius: "50%",
+              "&:hover": {
+                backgroundColor: dark,
+              },
+              m: 1,
+            }}
+          >
             <ArrowForwardIos />
           </IconButton>
         </Box>
@@ -154,10 +178,21 @@ const EventsPage = () => {
       </Box>
 
 
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", mt: 2 }}>
-        <IconButton onClick={handlePrevPast}>
-          <ArrowBackIos />
-        </IconButton>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", mt: 2, gap: 2}}>
+      <IconButton
+        onClick={handlePrevPast}
+        sx={{
+          backgroundColor: primary,
+          color: "#fff",
+          borderRadius: "50%",
+          "&:hover": {
+            backgroundColor: dark,
+          },
+          m: 1,
+        }}
+      >
+        <ArrowBackIos />
+      </IconButton>
 
         {pastEvents.length > 0 && (
           <Card sx={{
@@ -180,13 +215,29 @@ const EventsPage = () => {
               <Typography variant="h6">{pastEvents[currentPastIndex]?.title}</Typography>
               <Typography variant="body2">{pastEvents[currentPastIndex]?.description}</Typography>
               <Typography variant="body2">{new Date(pastEvents[currentPastIndex]?.date).toLocaleDateString()}</Typography>
+              <Box mt={2}>
+                <Link to={`/event/${upcomingEvents[currentUpcomingIndex]?._id}`}>
+                  <Button sx={{ ml: 1 }} variant="outlined">More Info</Button>
+                </Link>
+              </Box>
             </CardContent>
           </Card>
         )}
 
-        <IconButton onClick={handleNextPast}>
-          <ArrowForwardIos />
-        </IconButton>
+      <IconButton
+        onClick={handleNextPast}
+        sx={{
+          backgroundColor: primary,
+          color: "#fff",
+          borderRadius: "50%",
+          "&:hover": {
+            backgroundColor: dark,
+          },
+          m: 1,
+        }}
+      >
+        <ArrowForwardIos />
+      </IconButton>
       </Box>
       </WidgetWrapper>
 
@@ -208,12 +259,12 @@ const EventsPage = () => {
       </Box>
       <Box sx={{ width: "80%", margin: "0 auto" }}>
         <Calendar sx={{ width: "80%", margin: "0 auto" }}
-          tileContent={({ date }) => {
-            const event = calendarEvents.find(e => new Date(e.date).toDateString() === date.toDateString());
-            return event ? <Typography fontSize={12}>{event.title}</Typography> : null;
-          }}
-        />
-  
+        tileContent={({ date }) => {
+          const event = calendarEvents.find(e => new Date(e.date).toDateString() === date.toDateString());
+          return event ? <Typography fontSize={12}>{event.title}</Typography> : null;
+        }}
+      />
+
       </Box>
       </WidgetWrapper>
     </Box>
