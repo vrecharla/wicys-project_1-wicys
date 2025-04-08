@@ -204,7 +204,7 @@ const EventsPage = () => {
             <Box sx={{ width: isNonMobileScreens ? "70%" : "100%", height: "100%" }}>
               {pastEvents[currentPastIndex]?.photos.map((photo, index) => (
                 <img key={index}
-                  src={`${BASE_URL}/${photo}`}
+                  src={`${BASE_URL}/${photo.replace(/public\\assets\\/g, "assets/")}`}
                   alt={`Photo ${index + 1}`}
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
@@ -216,7 +216,7 @@ const EventsPage = () => {
               <Typography variant="body2">{pastEvents[currentPastIndex]?.description}</Typography>
               <Typography variant="body2">{new Date(pastEvents[currentPastIndex]?.date).toLocaleDateString()}</Typography>
               <Box mt={2}>
-                <Link to={`/event/${upcomingEvents[currentUpcomingIndex]?._id}`}>
+                <Link to={`/event/${pastEvents[currentPastIndex]?._id}`}>
                   <Button sx={{ ml: 1 }} variant="outlined">More Info</Button>
                 </Link>
               </Box>
@@ -331,12 +331,19 @@ const EventsPage = () => {
                   .filter(e => new Date(e.date).toDateString() === selectedDate.toDateString())
                   .map((event, index) => (
                     <Card key={index} sx={{ mb: 2 }}>
-                      <CardContent>
+                      <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                        <Box>
                         <Typography variant="h6">{event.title}</Typography>
                         <Typography variant="body2">{event.description}</Typography>
                         <Typography variant="caption">
                           {new Date(event.date).toLocaleDateString()}
                         </Typography>
+                        </Box>
+                        <Box>
+                          <Link to={`/event/${event._id}`}>
+                            <Button sx={{ ml: 1 }} variant="outlined">More Info</Button>
+                          </Link>
+                        </Box>
                       </CardContent>
                     </Card>
                   ))
