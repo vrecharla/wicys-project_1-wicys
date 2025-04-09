@@ -6,6 +6,7 @@ import "react-calendar/dist/Calendar.css";
 import { Button, Card, CardContent, Typography, Box, IconButton, useMediaQuery, MenuItem, Select, FormControl, InputLabel, useTheme} from "@mui/material";
 import { Add, ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import WidgetWrapper from "components/WidgetWrapper";
+import SentimentDissatisfiedOutlinedIcon from '@mui/icons-material/SentimentDissatisfiedOutlined';
 
 
 const BASE_URL = "http://localhost:3001";
@@ -18,6 +19,8 @@ const EventsPage = () => {
   const [currentUpcomingIndex, setCurrentUpcomingIndex] = useState(0);
   const [currentPastIndex, setCurrentPastIndex] = useState(0);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [upcomingImageIndex, setUpcomingImageIndex] = useState(0);
+  const [pastImageIndex, setPastImageIndex] = useState(0);
   // const isAdmin = useSelector((state) => state.user?.role === "admin");
   const isAdmin = true;
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
@@ -55,9 +58,41 @@ const EventsPage = () => {
   const handleNextPast = () => setCurrentPastIndex((prev) => (prev + 1) % pastEvents.length);
   const handlePrevPast = () => setCurrentPastIndex((prev) => (prev - 1 + pastEvents.length) % pastEvents.length);
 
+
+  useEffect(() => {
+    setUpcomingImageIndex(0);
+  }, [currentUpcomingIndex]);
+  
+  useEffect(() => {
+    setPastImageIndex(0);
+  }, [currentPastIndex]);
+
+
+  const handleNextImage = (type) => {
+    if (type === "upcoming") {
+      const flyers = upcomingEvents[currentUpcomingIndex]?.flyers || [];
+      setUpcomingImageIndex((prev) => (prev + 1) % flyers.length);
+    } else {
+      const photos = pastEvents[currentPastIndex]?.photos || [];
+      setPastImageIndex((prev) => (prev + 1) % photos.length);
+    }
+  };
+
+  const handlePrevImage = (type) => {
+    if (type === "upcoming") {
+      const flyers = upcomingEvents[currentUpcomingIndex]?.flyers || [];
+      setUpcomingImageIndex((prev) => (prev - 1 + flyers.length) % flyers.length);
+    } else {
+      const photos = pastEvents[currentPastIndex]?.photos || [];
+      setPastImageIndex((prev) => (prev - 1 + photos.length) % photos.length);
+    }
+  };
+  
+
   // Handle Year change for Past Events
   const handleYearChange = (event) => {
     setSelectedYear(event.target.value);
+    setCurrentPastIndex(0);
   };
 
   return (
@@ -72,6 +107,8 @@ const EventsPage = () => {
             Create Event
           </Button>
         )}
+
+
       {/* Upcoming Events Section */}
       <WidgetWrapper m="2rem 0">
 
@@ -89,7 +126,7 @@ const EventsPage = () => {
       </Box>
 
       {/* Single Upcoming Event Display */}
-      {upcomingEvents.length > 0 && (
+      {upcomingEvents.length > 0 ? (
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", gap: 2 }}>
           <IconButton
             onClick={handlePrevUpcoming}
@@ -115,13 +152,47 @@ const EventsPage = () => {
             height: isNonMobileScreens ? "400px" : "auto"
           }}>
             <Box sx={{ width: isNonMobileScreens ? "70%" : "100%", height: "100%" }}>
-              {upcomingEvents[currentUpcomingIndex]?.flyers.map((flyer, index) => (
-                <img key={index}
-                  src={`${BASE_URL}/${flyer.replace(/public\\assets\\/g, "assets/")}`}
-                  alt={`Flyer ${index + 1}`}
+            {upcomingEvents[currentUpcomingIndex]?.flyers?.length > 0 && (
+              <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
+                <IconButton
+                  onClick={() => handlePrevImage("upcoming")}
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: 0,
+                    transform: "translateY(-50%)",
+                    zIndex: 1,
+                    backgroundColor: "rgba(0,0,0,0.5)",
+                    color: "#fff",
+                    "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" }
+                  }}
+                >
+                  <ArrowBackIos fontSize="small" />
+                </IconButton>
+
+                <img
+                  src={`${BASE_URL}/${upcomingEvents[currentUpcomingIndex]?.flyers[upcomingImageIndex].replace(/public\\assets\\/g, "assets/")}`}
+                  alt={`Flyer`}
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
-              ))}
+
+                <IconButton
+                  onClick={() => handleNextImage("upcoming")}
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    right: 0,
+                    transform: "translateY(-50%)",
+                    zIndex: 1,
+                    backgroundColor: "rgba(0,0,0,0.5)",
+                    color: "#fff",
+                    "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" }
+                  }}
+                >
+                  <ArrowForwardIos fontSize="small" />
+                </IconButton>
+              </Box>
+            )}
             </Box>
 
             <CardContent sx={{ width: isNonMobileScreens ? "30%" : "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
@@ -151,7 +222,14 @@ const EventsPage = () => {
             <ArrowForwardIos />
           </IconButton>
         </Box>
-      )}
+      ) : (
+        <Box sx={{ textAlign: "center", mt: 2 }}>
+        {/* <SentimentDissatisfiedOutlinedIcon fontSize="large" color="disabled" /> */}
+        <Typography variant="h2" component="div">😔</Typography>
+        <Typography variant="h3" color="textSecondary">
+          No upcoming events found.
+        </Typography>
+      </Box> )}
       </WidgetWrapper>
 
 
@@ -168,7 +246,7 @@ const EventsPage = () => {
           mb: 2
         }}
       >
-        <Typography variant="h2" fontWeight="500" color={dark} sx={{ mt: "1rem" }}>Past Events</Typography>
+        <Typography variant="h2" fontWeight="500" color={dark} sx={{ mt: "1rem" }}>Past Events for</Typography>
         <Select sx={{ mt: isNonMobileScreens ? 0 : 2 }} value={selectedYear} onChange={handleYearChange}>
         {[...Array(10)].map((_, i) => {
           const year = new Date().getFullYear() - i;
@@ -177,6 +255,7 @@ const EventsPage = () => {
       </Select>
       </Box>
 
+      {pastEvents.length > 0 ? (
 
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", mt: 2, gap: 2}}>
       <IconButton
@@ -202,13 +281,47 @@ const EventsPage = () => {
             height: isNonMobileScreens ? "400px" : "auto"
           }}>
             <Box sx={{ width: isNonMobileScreens ? "70%" : "100%", height: "100%" }}>
-              {pastEvents[currentPastIndex]?.photos.map((photo, index) => (
-                <img key={index}
-                  src={`${BASE_URL}/${photo.replace(/public\\assets\\/g, "assets/")}`}
-                  alt={`Photo ${index + 1}`}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              ))}
+              {pastEvents[currentPastIndex]?.photos?.length > 0 && (
+                <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
+                  <IconButton
+                    onClick={() => handlePrevImage("past")}
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: 0,
+                      transform: "translateY(-50%)",
+                      zIndex: 1,
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                      color: "#fff",
+                      "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" }
+                    }}
+                  >
+                    <ArrowBackIos fontSize="small" />
+                  </IconButton>
+
+                  <img
+                    src={`${BASE_URL}/${pastEvents[currentPastIndex]?.photos[pastImageIndex].replace(/public\\assets\\/g, "assets/")}`}
+                    alt={`Photo`}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+
+                  <IconButton
+                    onClick={() => handleNextImage("past")}
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      right: 0,
+                      transform: "translateY(-50%)",
+                      zIndex: 1,
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                      color: "#fff",
+                      "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" }
+                    }}
+                  >
+                    <ArrowForwardIos fontSize="small" />
+                  </IconButton>
+                </Box>
+              )}
             </Box>
 
             <CardContent sx={{ width: isNonMobileScreens ? "30%" : "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
@@ -239,6 +352,14 @@ const EventsPage = () => {
         <ArrowForwardIos />
       </IconButton>
       </Box>
+      ) : (
+        <Box sx={{ textAlign: "center", mt: 2 }}>
+        {/* <SentimentDissatisfiedOutlinedIcon fontSize="large" color="disabled" /> */}
+        <Typography variant="h2" component="div">😔</Typography>
+        <Typography variant="h3" color="textSecondary">
+          No past events found for {selectedYear}.
+        </Typography>
+      </Box> )}
       </WidgetWrapper>
 
 
