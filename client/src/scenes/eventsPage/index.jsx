@@ -240,19 +240,43 @@ const EventsPage = () => {
       <Box 
         sx={{
           display: "flex",
-          justifyContent: isNonMobileScreens ? "space-between" : "flex-start",
-          flexDirection: isNonMobileScreens ? "row" : "column",
-          alignItems: "flex-start",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 2,
           mb: 2
         }}
       >
-        <Typography variant="h2" fontWeight="500" color={dark} sx={{ mt: "1rem" }}>Past Events for</Typography>
-        <Select sx={{ mt: isNonMobileScreens ? 0 : 2 }} value={selectedYear} onChange={handleYearChange}>
-        {[...Array(10)].map((_, i) => {
-          const year = new Date().getFullYear() - i;
-          return <MenuItem key={year} value={year}>{year}</MenuItem>;
-        })}
-      </Select>
+        <Typography 
+          variant="h2" 
+          fontWeight="500" 
+          color={dark}
+        >
+          Past Events For
+        </Typography>
+
+        <FormControl variant="standard" sx={{ minWidth: 100 }}>
+          <Select
+            value={selectedYear}
+            onChange={handleYearChange}
+            disableUnderline
+            sx={{
+              fontSize: 32,
+              fontWeight: 500,
+              color: primary,
+              "& .MuiSelect-icon": {
+                color: primary,
+              },
+              "&:hover": {
+                backgroundColor: "transparent",
+              },
+            }}
+          >
+            {[...Array(10)].map((_, i) => {
+              const year = new Date().getFullYear() - i;
+              return <MenuItem key={year} value={year}>{year}</MenuItem>;
+            })}
+          </Select>
+        </FormControl>
       </Box>
 
       {pastEvents.length > 0 ? (
