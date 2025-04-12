@@ -9,7 +9,6 @@ import WidgetWrapper from "components/WidgetWrapper";
 import CreateEventForm from "components/CreateEventForm";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 
-
 const BASE_URL = "http://localhost:3001";
 
 const EventsPage = () => {
@@ -29,16 +28,22 @@ const EventsPage = () => {
   const { palette } = useTheme();
   const dark = palette.neutral.dark;
   const primary = palette.primary.main;
+  const token = useSelector((state) => state.token);
   
-
   useEffect(() => {
     fetchEvents();
   }, [selectedYear]);
 
   const fetchEvents = async () => {
     try {
-      const upcomingRes = await fetch(`${BASE_URL}/events/upcoming`);
-      const pastRes = await fetch(`${BASE_URL}/events/past?year=${selectedYear}`);
+      const upcomingRes = await fetch(`${BASE_URL}/events/upcoming`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const pastRes = await fetch(`${BASE_URL}/events/past?year=${selectedYear}`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (!upcomingRes.ok) throw new Error("Failed to fetch upcoming events");
       if (!pastRes.ok) throw new Error("Failed to fetch past events");
@@ -70,7 +75,6 @@ const EventsPage = () => {
   useEffect(() => {
     setPastImageIndex(0);
   }, [currentPastIndex]);
-
 
   const handleNextImage = (type) => {
     if (type === "upcoming") {

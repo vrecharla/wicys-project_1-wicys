@@ -13,8 +13,6 @@ const CreateEventForm = ({ onClose }) => {
   });
 
   const [flyers, setFlyers] = useState([]);
-  const [photos, setPhotos] = useState([]);
-
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,8 +30,7 @@ const CreateEventForm = ({ onClose }) => {
     });
 
     flyers.forEach((file) => eventData.append("flyers", file));
-    photos.forEach((file) => eventData.append("photos", file));
-
+    
     const res = await fetch("http://localhost:3001/events/create", {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
