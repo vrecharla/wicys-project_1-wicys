@@ -6,7 +6,8 @@ import "react-calendar/dist/Calendar.css";
 import { Button, Card, CardContent, Typography, Box, IconButton, useMediaQuery, MenuItem, Select, FormControl, InputLabel, useTheme} from "@mui/material";
 import { Add, ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import WidgetWrapper from "components/WidgetWrapper";
-import SentimentDissatisfiedOutlinedIcon from '@mui/icons-material/SentimentDissatisfiedOutlined';
+import CreateEventForm from "components/CreateEventForm";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 
 
 const BASE_URL = "http://localhost:3001";
@@ -21,6 +22,7 @@ const EventsPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [upcomingImageIndex, setUpcomingImageIndex] = useState(0);
   const [pastImageIndex, setPastImageIndex] = useState(0);
+  const [openCreateEvent, setOpenCreateEvent] = useState(false);
   // const isAdmin = useSelector((state) => state.user?.role === "admin");
   const isAdmin = true;
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
@@ -58,6 +60,8 @@ const EventsPage = () => {
   const handleNextPast = () => setCurrentPastIndex((prev) => (prev + 1) % pastEvents.length);
   const handlePrevPast = () => setCurrentPastIndex((prev) => (prev - 1 + pastEvents.length) % pastEvents.length);
 
+  const handleOpenCreateEvent = () => setOpenCreateEvent(true);
+  const handleCloseCreateEvent = () => setOpenCreateEvent(false);
 
   useEffect(() => {
     setUpcomingImageIndex(0);
@@ -96,13 +100,15 @@ const EventsPage = () => {
   };
 
   return (
+    <>
     <Box p={2}>
       {isAdmin && (
           <Button 
             startIcon={<Add />} 
             variant="contained" 
             color="primary"
-            sx={{ mt: isNonMobileScreens ? 0 : 2 }} // Add margin-top only on mobile
+            onClick={handleOpenCreateEvent}
+            sx={{ mt: isNonMobileScreens ? 0 : 2 }}
           >
             Create Event
           </Button>
@@ -502,6 +508,14 @@ const EventsPage = () => {
       </Box>
       </WidgetWrapper>
     </Box>
+
+    <Dialog open={openCreateEvent} onClose={handleCloseCreateEvent} maxWidth="md" fullWidth>
+      <DialogTitle>Create New Event</DialogTitle>
+      <DialogContent dividers>
+        <CreateEventForm onClose={handleCloseCreateEvent} />
+      </DialogContent>
+    </Dialog>
+  </>
 
   );
 };

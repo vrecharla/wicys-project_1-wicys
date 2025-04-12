@@ -35,7 +35,6 @@ router.post('/create', verifyToken, upload.fields([{ name: 'flyers', maxCount: 2
       flyers: flyerPaths,
       photos: photoPaths,
       location,
-      type,
       registrationLink,
     });
 
