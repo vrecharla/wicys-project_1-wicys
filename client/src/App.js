@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "./theme";
-import CreateEventForm from "components/CreateEventForm";
+import EventDetailsPage from "components/EventDetailsPage";
 
 function App() {
   const mode = useSelector((state) => state.mode);
@@ -34,10 +34,10 @@ function App() {
               path="/events"
               element={isAuth ? <EventsPage /> : <Navigate to="/" />}
             />
-            <Route
-              path="/temp"
-              element={isAuth ? <CreateEventForm /> : <Navigate to="/" />}
-           />
+            <Route 
+              path="/event/:id" 
+              element={isAuth ? <EventDetailsPage /> : <Navigate to="/" />} 
+            />
           </Routes>
         </ThemeProvider>
       </BrowserRouter>

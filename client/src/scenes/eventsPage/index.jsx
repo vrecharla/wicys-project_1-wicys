@@ -8,6 +8,7 @@ import { Add, ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import WidgetWrapper from "components/WidgetWrapper";
 import CreateEventForm from "components/CreateEventForm";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import Navbar from "scenes/navbar";
 
 const BASE_URL = "http://localhost:3001";
 
@@ -105,6 +106,7 @@ const EventsPage = () => {
 
   return (
     <>
+    <Navbar />
     <Box p={2}>
       {isAdmin && (
           <Button 

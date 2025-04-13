@@ -14,7 +14,7 @@ const validationSchema = Yup.object({
   title: Yup.string().required("Event name is required"),
   date: Yup.date()
   .required("Date is required")
-  .min(new Date().setHours(0, 0, 0, 0), "Date must be today or in the future"),
+  .min(new Date(new Date().setHours(0, 0, 0, 0)), "Date must be today or in the future"),
   location: Yup.string().required("Location is required"),
   description: Yup.string().required("Description is required"),
   registrationLink: Yup.string()
