@@ -129,7 +129,15 @@ router.get('/get/:id', async (req, res) => {
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
-    res.status(200).json(event);
+    const previousEvent = await Event.findOne({ date: { $lt: event.date } })
+    .sort({ date: -1 }) // Latest before current
+    .select("_id title");
+
+    const nextEvent = await Event.findOne({ date: { $gt: event.date } })
+      .sort({ date: 1 }) // Earliest after current
+      .select("_id title");
+
+    res.json({ event, previousEvent, nextEvent });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
