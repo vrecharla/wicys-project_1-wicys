@@ -7,11 +7,15 @@ import {
   Button,
   useMediaQuery,
   useTheme,
+  Dialog,
+  CircularProgress
 } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import Navbar from "scenes/navbar";
 import WidgetWrapper from "components/WidgetWrapper";
+import EditEventForm from "components/EditEventForm";
+
 
 const BASE_URL = "http://localhost:3001";
 
@@ -25,9 +29,14 @@ const EventDetailsPage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const { palette } = useTheme();
   const dark = palette.neutral?.dark || "#000";
+  // const isAdmin = useSelector((state) => state.user?.role === "admin");
+  const isAdmin = true;
+  const [editOpen, setEditOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEvent = async () => {
+      setLoading(true);
       try {
         const res = await fetch(`${BASE_URL}/events/get/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -38,6 +47,8 @@ const EventDetailsPage = () => {
         setNextEvent(data.nextEvent || null);
       } catch (error) {
         console.error("Error fetching event details:", error);
+      } finally {
+        setLoading(false);
       }
     };
   
@@ -54,11 +65,26 @@ const EventDetailsPage = () => {
     setImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  if (!event) {
+  if (!event || loading) {
     return (
       <Box>
         <Navbar />
-        <Typography sx={{ p: 4 }}>Loading event details...</Typography>
+        <Box
+          sx={{
+            height: '80vh',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 2,
+            transition: 'opacity 0.3s ease-in-out',
+          }}
+        >
+          <CircularProgress color="primary" />
+          <Typography variant="h6" color="text.secondary">
+            Loading event details...
+          </Typography>
+        </Box>
       </Box>
     );
   }
@@ -158,11 +184,24 @@ const EventDetailsPage = () => {
             Register for Event
           </Button>
         </Box>
+        {isAdmin && (
+          <Box mt={2} textAlign="center">
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => setEditOpen(true)}
+            >
+              Edit Event
+            </Button>
+          </Box>
+        )}
+
       </WidgetWrapper>
     </Box>
   );
 
   return (
+    <>
     <Box>
       <Navbar />
       <Box pl={4} pt={2}>
@@ -191,8 +230,8 @@ const EventDetailsPage = () => {
         >
           {isNonMobileScreens ? (
             <>
-              {renderInfoSection()}
               {images.length > 0 && renderImageCarousel()}
+              {renderInfoSection()}
             </>
           ) : (
             <>
@@ -237,6 +276,26 @@ const EventDetailsPage = () => {
 
       </Box>
     </Box>
+    <Dialog open={editOpen} onClose={() => setEditOpen(false)} fullWidth maxWidth="md">
+      <Box p={3}>
+        <Typography variant="h5" mb={2}>
+          Edit Event
+        </Typography>
+        <EditEventForm
+          onClose={() => setEditOpen(false)}
+          eventId={event._id}
+          initialValues={{
+            title: event.title,
+            date: new Date(event.date).toISOString().split("T")[0],
+            location: event.location,
+            description: event.description,
+            registrationLink: event.registrationLink,
+          }}
+        />
+      </Box>
+    </Dialog>
+
+  </>
   );
 };
 

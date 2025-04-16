@@ -428,12 +428,14 @@ const EventsPage = () => {
             <Box
               sx={{
                 width: "100%",
-                maxWidth: 500,
+                maxWidth: 800,
+                height: "100%",
+                maxHeight: 500,
                 backgroundColor: palette.background.paper,
                 borderRadius: 2,
                 p: 2,
                 boxShadow: 3,
-                fontFamily: "Roboto, sans-serif", // MUI default font
+                fontFamily: "Roboto, sans-serif",
                 "& .react-calendar": {
                   width: "100%",
                   border: "none",
@@ -505,7 +507,10 @@ const EventsPage = () => {
                     </Card>
                   ))
               ) : (
-                <Typography>No events on this date.</Typography>
+                <Box sx={{ display: "flex", textAlign: "center", alignItems: "center", justifyContent: "center", height: "100%", flexDirection: "column",}}>
+                <Typography variant="h2" component="div">😔</Typography>
+                <Typography component="div">No events found on this date.</Typography>
+                </Box>
               )}
             </Box>
           </Box>

@@ -176,6 +176,36 @@ router.get('/past', async (req, res) => {
   }
 });
 
+/* ----------------------------------
+  ✅ UPDATE EVENT DETAILS (Not Media)
+------------------------------------ */
+router.patch('/update/:id', verifyToken, upload.fields([{ name: 'flyers', maxCount: 20 }]), async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const updatableFields = ['title', 'date', 'description', 'location', 'registrationLink', 'type'];
+    updatableFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        event[field] = req.body[field];
+      }
+    });
+
+    const newFlyers = req.files['flyers'] ? req.files['flyers'].map(file => file.path) : [];
+    if (newFlyers.length > 0) {
+      event.flyers.push(...newFlyers);
+    }
+
+    await event.save();
+    res.status(200).json({ message: "Event updated successfully", event });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 
 
 export default router;
