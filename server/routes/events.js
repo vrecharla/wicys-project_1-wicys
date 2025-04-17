@@ -179,7 +179,7 @@ router.get('/past', async (req, res) => {
 /* ----------------------------------
   ✅ UPDATE EVENT DETAILS (Not Media)
 ------------------------------------ */
-router.patch('/update/:id', verifyToken, upload.fields([{ name: 'flyers', maxCount: 20 }]), async (req, res) => {
+router.patch('/update/:id', verifyToken,  upload.fields([{ name: 'flyers', maxCount: 20 }, { name: 'photos', maxCount: 50 }]), async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
     if (!event) {
@@ -196,6 +196,11 @@ router.patch('/update/:id', verifyToken, upload.fields([{ name: 'flyers', maxCou
     const newFlyers = req.files['flyers'] ? req.files['flyers'].map(file => file.path) : [];
     if (newFlyers.length > 0) {
       event.flyers.push(...newFlyers);
+    }
+
+    const newPhotos = req.files['photos'] ? req.files['photos'].map(file => file.path) : [];
+    if (newPhotos.length > 0) {
+      event.photos.push(...newPhotos);
     }
 
     await event.save();
