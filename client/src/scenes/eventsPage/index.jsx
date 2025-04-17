@@ -173,7 +173,7 @@ const EventsPage = () => {
                     top: "50%",
                     left: 0,
                     transform: "translateY(-50%)",
-                    zIndex: 1,
+                    zIndex: 2,
                     backgroundColor: "rgba(0,0,0,0.5)",
                     color: "#fff",
                     "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" }
@@ -182,11 +182,40 @@ const EventsPage = () => {
                   <ArrowBackIos fontSize="small" />
                 </IconButton>
 
-                <img
-                  src={`${BASE_URL}/${upcomingEvents[currentUpcomingIndex]?.flyers[upcomingImageIndex].replace(/public\\assets\\/g, "assets/")}`}
-                  alt={`Flyer`}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
+                <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
+                  {/* Background Image - Zoomed Out & Blurred */}
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      backgroundImage: `url(${BASE_URL}/${(upcomingEvents[currentUpcomingIndex]?.flyers[upcomingImageIndex] || '').replace(/public\\assets\\/g, "assets/")})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      filter: "blur(12px) brightness(0.6)",
+                      pointerEvents: "none",
+                      zIndex: 0,
+                    }}
+                  />
+
+                  {/* Foreground Image - Full View */}
+                  <Box
+                    component="img"
+                    src={`${BASE_URL}/${(upcomingEvents[currentUpcomingIndex]?.flyers[upcomingImageIndex] || '').replace(/public\\assets\\/g, "assets/")}`}
+                    alt="Flyer"
+                    sx={{
+                      position: "relative",
+                      zIndex: 1,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      pointerEvents: "none",
+                    }}
+                  />
+                </Box>
+
 
                 <IconButton
                   onClick={() => handleNextImage("upcoming")}
@@ -195,7 +224,7 @@ const EventsPage = () => {
                     top: "50%",
                     right: 0,
                     transform: "translateY(-50%)",
-                    zIndex: 1,
+                    zIndex: 2,
                     backgroundColor: "rgba(0,0,0,0.5)",
                     color: "#fff",
                     "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" }
@@ -326,7 +355,7 @@ const EventsPage = () => {
                       top: "50%",
                       left: 0,
                       transform: "translateY(-50%)",
-                      zIndex: 1,
+                      zIndex: 2,
                       backgroundColor: "rgba(0,0,0,0.5)",
                       color: "#fff",
                       "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" }
@@ -335,11 +364,39 @@ const EventsPage = () => {
                     <ArrowBackIos fontSize="small" />
                   </IconButton>
 
-                  <img
-                    src={`${BASE_URL}/${pastEvents[currentPastIndex]?.photos[pastImageIndex].replace(/public\\assets\\/g, "assets/")}`}
-                    alt={`Photo`}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
+                  {/* Background Image - Zoomed Out & Blurred */}
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      backgroundImage: `url(${BASE_URL}/${(pastEvents[currentPastIndex]?.photos[pastImageIndex] || '').replace(/public\\assets\\/g, "assets/")})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      filter: "blur(12px) brightness(0.6)",
+                      pointerEvents: "none",
+                      zIndex: 0,
+                    }}
                   />
+
+                  {/* Foreground Image - Full View */}
+                  <Box
+                    component="img"
+                    src={`${BASE_URL}/${(pastEvents[currentPastIndex]?.photos[pastImageIndex] || '').replace(/public\\assets\\/g, "assets/")}`}
+                    alt="Flyer"
+                    sx={{
+                      position: "relative",
+                      zIndex: 1,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      pointerEvents: "none",
+                    }}
+                  />
+                </Box>
 
                   <IconButton
                     onClick={() => handleNextImage("past")}
@@ -348,7 +405,7 @@ const EventsPage = () => {
                       top: "50%",
                       right: 0,
                       transform: "translateY(-50%)",
-                      zIndex: 1,
+                      zIndex: 2,
                       backgroundColor: "rgba(0,0,0,0.5)",
                       color: "#fff",
                       "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" }
