@@ -197,7 +197,7 @@ const EventsPage = () => {
                       height: "100%",
                       objectFit: "conver",
                       pointerEvents: "none",
-                      filter: "blur(10px) brightness(0.6)",
+                      filter: "blur(10px) brightness(0.8)",
                     }}
                   />
 
@@ -368,18 +368,19 @@ const EventsPage = () => {
                   <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
                   {/* Background Image - Zoomed Out & Blurred */}
                   <Box
+                    component="img"
+                    src={`${BASE_URL}/${(pastEvents[currentPastIndex]?.photos[pastImageIndex] || '').replace(/public\\assets\\/g, "assets/")}`}
+                    alt="Flyer"
                     sx={{
                       position: "absolute",
                       top: 0,
                       left: 0,
+                      zIndex: 0,
                       width: "100%",
                       height: "100%",
-                      backgroundImage: `url(${BASE_URL}/${(pastEvents[currentPastIndex]?.photos[pastImageIndex] || '').replace(/public\\assets\\/g, "assets/")})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      filter: "blur(12px) brightness(0.6)",
+                      objectFit: "conver",
                       pointerEvents: "none",
-                      zIndex: 0,
+                      filter: "blur(10px) brightness(0.8)",
                     }}
                   />
 
