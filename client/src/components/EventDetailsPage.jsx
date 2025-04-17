@@ -34,7 +34,6 @@ const EventDetailsPage = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const today = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -173,19 +172,21 @@ const EventDetailsPage = () => {
         )}
 
         {/* Register Button */}
-        {!(new Date(event.date) < new Date(today)) && (<Box mt={4} textAlign="center">
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            component="a"
-            href={event.registrationLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Register for Event
-          </Button>
-        </Box>)}
+        {new Date(event.date) >= new Date().setHours(0, 0, 0, 0) && event.registrationLink && (
+          <Box mt={4} textAlign="center">
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              component="a"
+              href={event.registrationLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Register for Event
+            </Button>
+          </Box>
+        )}
         
         {isAdmin && (
           <Box mt={2} textAlign="center">
