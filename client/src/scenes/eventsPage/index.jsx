@@ -521,10 +521,12 @@ const EventsPage = () => {
     </Box>
 
     <Dialog open={openCreateEvent} onClose={handleCloseCreateEvent} maxWidth="md" fullWidth>
-      <DialogTitle>Create New Event</DialogTitle>
-      <DialogContent dividers>
+      <Box p={3}>
+      <Typography variant="h3" mb={2} fontWeight={500}>
+                Create New Event
+      </Typography>
         <CreateEventForm onClose={handleCloseCreateEvent} />
-      </DialogContent>
+      </Box>
     </Dialog>
   </>
 

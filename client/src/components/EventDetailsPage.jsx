@@ -278,7 +278,7 @@ const EventDetailsPage = () => {
     </Box>
     <Dialog open={editOpen} onClose={() => setEditOpen(false)} fullWidth maxWidth="md">
       <Box p={3}>
-        <Typography variant="h5" mb={2}>
+        <Typography variant="h3" mb={2} fontWeight={500}>
           Edit Event
         </Typography>
         <EditEventForm
