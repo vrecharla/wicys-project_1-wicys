@@ -34,6 +34,8 @@ const EventDetailsPage = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const today = new Date().toISOString().split("T")[0];
+
   useEffect(() => {
     const fetchEvent = async () => {
       setLoading(true);
@@ -171,7 +173,7 @@ const EventDetailsPage = () => {
         )}
 
         {/* Register Button */}
-        <Box mt={4} textAlign="center">
+        {!(new Date(event.date) < new Date(today)) && (<Box mt={4} textAlign="center">
           <Button
             variant="contained"
             color="primary"
@@ -183,7 +185,8 @@ const EventDetailsPage = () => {
           >
             Register for Event
           </Button>
-        </Box>
+        </Box>)}
+        
         {isAdmin && (
           <Box mt={2} textAlign="center">
             <Button
