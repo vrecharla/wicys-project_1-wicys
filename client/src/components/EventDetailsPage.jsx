@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import Navbar from "scenes/navbar";
 import WidgetWrapper from "components/WidgetWrapper";
 import EditEventForm from "components/EditEventForm";
+import UploadPhotosForm from "./UploadPhotosForm";
 
 
 const BASE_URL = "http://localhost:3001";
@@ -195,7 +196,7 @@ const EventDetailsPage = () => {
               color="primary"
               onClick={() => setEditOpen(true)}
             >
-              Edit Event
+              { new Date(event.date) >= new Date().setHours(0, 0, 0, 0)? "Edit Event": "Upload Photos"}
             </Button>
           </Box>
         )}
@@ -282,6 +283,8 @@ const EventDetailsPage = () => {
     </Box>
     <Dialog open={editOpen} onClose={() => setEditOpen(false)} fullWidth maxWidth="md">
       <Box p={3}>
+        { new Date(event.date) >= new Date().setHours(0, 0, 0, 0)?(
+          <>
         <Typography variant="h3" mb={2} fontWeight={500}>
           Edit Event
         </Typography>
@@ -297,6 +300,26 @@ const EventDetailsPage = () => {
             flyers: event.flyers || [],
           }}
         />
+        </>):(
+          <>
+          <Typography variant="h3" mb={2} fontWeight={500}>
+            Upload Photos
+          </Typography>
+          <UploadPhotosForm
+            onClose={() => setEditOpen(false)}
+            eventId={event._id}
+            initialValues={{
+              title: event.title,
+              date: new Date(event.date).toISOString().split("T")[0],
+              location: event.location,
+              description: event.description,
+              registrationLink: event.registrationLink,
+              photos: event.photos || [],
+            }}
+          />
+          </>
+
+        )}
       </Box>
     </Dialog>
 
