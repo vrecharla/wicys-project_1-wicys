@@ -23,8 +23,8 @@ const EventsPage = () => {
   const [upcomingImageIndex, setUpcomingImageIndex] = useState(0);
   const [pastImageIndex, setPastImageIndex] = useState(0);
   const [openCreateEvent, setOpenCreateEvent] = useState(false);
-  // const isAdmin = useSelector((state) => state.user?.role === "admin");
-  const isAdmin = true;
+  const isAdmin = useSelector((state) => state.user?.role === "admin");
+  // const isAdmin = true;
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const { palette } = useTheme();
   const dark = palette.neutral.dark;
@@ -388,7 +388,7 @@ const EventsPage = () => {
                           zIndex: 0,
                           width: "100%",
                           height: "100%",
-                          objectFit: "cover",
+                          objectFit: "conver",
                           pointerEvents: "none",
                           filter: "blur(10px) brightness(0.8)",
                         }}

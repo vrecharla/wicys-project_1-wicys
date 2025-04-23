@@ -30,8 +30,8 @@ const EventDetailsPage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const { palette } = useTheme();
   const dark = palette.neutral?.dark || "#000";
-  // const isAdmin = useSelector((state) => state.user?.role === "admin");
-  const isAdmin = true;
+  const isAdmin = useSelector((state) => state.user?.role === "admin");
+  // const isAdmin = true;
   const [editOpen, setEditOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -124,7 +124,7 @@ const EventDetailsPage = () => {
           top: "50%",
           left: 0,
           transform: "translateY(-50%)",
-          zIndex: 1,
+          zIndex: 2,
           backgroundColor: "rgba(0,0,0,0.5)",
           color: "#fff",
           "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
@@ -133,16 +133,39 @@ const EventDetailsPage = () => {
         <ArrowBackIos />
       </IconButton>
 
-      <img
-        src={`${BASE_URL}/${images[imageIndex]?.replace(/public\\assets\\/g, "assets/")}`}
-        alt="Event Visual"
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          borderRadius: 8,
-        }}
-      />
+      <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
+        {/* Blurred background image */}
+        <Box
+          component="img"
+          src={`${BASE_URL}/${images[imageIndex]?.replace(/public\\assets\\/g, "assets/")}`}
+          alt="Event Media"
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "conver",
+            pointerEvents: "none",
+            filter: "blur(10px) brightness(0.8)",
+          }}
+        />
+        {/* Foreground image */}
+        <Box
+          component="img"
+          src={`${BASE_URL}/${images[imageIndex]?.replace(/public\\assets\\/g, "assets/")}`}
+          alt="Event Media"
+          sx={{
+            position: "relative",
+            zIndex: 1,
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            pointerEvents: "none",
+          }}
+        />
+      </Box>
 
       <IconButton
         onClick={handleNextImage}
@@ -151,7 +174,7 @@ const EventDetailsPage = () => {
           top: "50%",
           right: 0,
           transform: "translateY(-50%)",
-          zIndex: 1,
+          zIndex: 2,
           backgroundColor: "rgba(0,0,0,0.5)",
           color: "#fff",
           "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
