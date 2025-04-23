@@ -337,17 +337,15 @@ const EditEventForm = ({ eventId, initialValues, onClose }) => {
       </Stack>
     </Box>
     <Dialog open={!!enlargedImage} onClose={() => setEnlargedImage(null)} maxWidth="lg">
-        <Box p={2}>
-            <img
-            src={
-                enlargedImage
-                ? enlargedImage
-                : ""
-            }
-            alt="Enlarged Flyer"
+        {enlargedImage && (
+          <Box p={2}>
+          <img
+            src={enlargedImage}
+            alt="Enlarged Preview"
             style={{ maxWidth: "100%", maxHeight: "80vh", borderRadius: 8 }}
-            />
-        </Box>
+          />
+          </Box>
+        )}
     </Dialog>
 
     </>

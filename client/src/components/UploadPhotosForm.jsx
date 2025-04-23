@@ -17,7 +17,10 @@ const BASE_URL = "http://localhost:3001";
 
 const UploadPhotosForm = ({ eventId, initialValues, onClose }) => {
   const token = useSelector((state) => state.token);
-  const [existingPhotos, setExistingPhotos] = useState(initialValues.photos || []);
+  const [existingPhotos, setExistingPhotos] = useState([
+    ...(initialValues.photos || []),
+    ...(initialValues.flyers || []),
+  ]);
   const [photos, setPhotos] = useState([]);
   const [photoPreviews, setPhotoPreviews] = useState([]);
   const [enlargedImage, setEnlargedImage] = useState(null);
@@ -268,17 +271,15 @@ const UploadPhotosForm = ({ eventId, initialValues, onClose }) => {
       </Stack>
     </Box>
     <Dialog open={!!enlargedImage} onClose={() => setEnlargedImage(null)} maxWidth="lg">
-        <Box p={2}>
-            <img
-            src={
-                enlargedImage
-                ? enlargedImage
-                : ""
-            }
-            alt="Enlarged Photo"
+        {enlargedImage && (
+          <Box p={2}>
+          <img
+            src={enlargedImage}
+            alt="Enlarged Preview"
             style={{ maxWidth: "100%", maxHeight: "80vh", borderRadius: 8 }}
-            />
-        </Box>
+          />
+          </Box>
+        )}
     </Dialog>
 
     </>

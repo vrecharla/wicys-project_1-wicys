@@ -353,6 +353,7 @@ const EventDetailsPage = () => {
               location: event.location,
               description: event.description,
               registrationLink: event.registrationLink,
+              flyers: event.flyers || [],
               photos: event.photos || [],
             }}
           />
