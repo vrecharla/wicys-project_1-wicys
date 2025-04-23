@@ -204,7 +204,7 @@ const UploadPhotosForm = ({ eventId, initialValues, onClose }) => {
         {existingPhotos.length > 0 && (
         <Box sx={{ mt: 2 }}>
             <Typography variant="subtitle2">Current Photos:</Typography>
-            <Stack direction="row" spacing={2} mt={1} flexWrap="wrap">
+            <Stack direction="row" gap={2} mt={1} mb={2} flexWrap="wrap">
             {existingPhotos.map((photoPath, index) => (
                 <Box key={index} sx={{ 
                   width: 100, 
@@ -272,7 +272,7 @@ const UploadPhotosForm = ({ eventId, initialValues, onClose }) => {
     </Box>
     <Dialog open={!!enlargedImage} onClose={() => setEnlargedImage(null)} maxWidth="lg">
         {enlargedImage && (
-          <Box p={2}>
+          <Box backgroundColor="rgba(0, 0, 0, 0.5)">
           <img
             src={enlargedImage}
             alt="Enlarged Preview"

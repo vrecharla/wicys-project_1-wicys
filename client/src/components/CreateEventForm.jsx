@@ -177,7 +177,7 @@ const CreateEventForm = ({ onClose }) => {
                 </Box>
         
                 {flyerPreviews.length > 0 && (
-                <Stack direction="row" spacing={2} mt={2} flexWrap="wrap">
+                <Stack direction="row" gap={2} mt={2} mb={2} flexWrap="wrap">
                     {flyerPreviews.map((item, index) => (
                     <Box key={index} sx={{ position: "relative", width: 100, height: 100 }}>
                         <Box
@@ -264,7 +264,7 @@ const CreateEventForm = ({ onClose }) => {
     </Box>
     <Dialog open={!!enlargedImage} onClose={() => setEnlargedImage(null)} maxWidth="lg">
             {enlargedImage && (
-              <Box p={2}>
+              <Box backgroundColor="rgba(0, 0, 0, 0.5)">
               <img
                 src={enlargedImage}
                 alt="Enlarged Preview"
