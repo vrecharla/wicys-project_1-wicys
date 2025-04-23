@@ -58,14 +58,25 @@ const EventDetailsPage = () => {
   }, [id, token]);
 
   const handleNextImage = () => {
-    const images = event?.flyers || event?.photos || [];
-    setImageIndex((prev) => (prev + 1) % images.length);
+    const isPastEvent = new Date(event.date) < new Date().setHours(0, 0, 0, 0);
+    const combinedImages = isPastEvent
+      ? [...(event.flyers || []), ...(event.photos || [])]
+      : event.flyers?.length > 0
+        ? event.flyers
+        : event.photos || [];
+    setImageIndex((prev) => (prev + 1) % combinedImages.length);
   };
-
+  
   const handlePrevImage = () => {
-    const images = event?.flyers || event?.photos || [];
-    setImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    const isPastEvent = new Date(event.date) < new Date().setHours(0, 0, 0, 0);
+    const combinedImages = isPastEvent
+      ? [...(event.flyers || []), ...(event.photos || [])]
+      : event.flyers?.length > 0
+        ? event.flyers
+        : event.photos || [];
+    setImageIndex((prev) => (prev - 1 + combinedImages.length) % combinedImages.length);
   };
+  
 
   if (!event || loading) {
     return (
@@ -91,7 +102,12 @@ const EventDetailsPage = () => {
     );
   }
 
-  const images = event.flyers?.length > 0 ? event.flyers : event.photos || [];
+  const isPastEvent = new Date(event.date) < new Date().setHours(0, 0, 0, 0);
+  const images = isPastEvent
+    ? [...(event.flyers || []), ...(event.photos || [])]
+    : event.flyers?.length > 0
+      ? event.flyers
+      : event.photos || [];
 
   const renderImageCarousel = () => (
     <Box

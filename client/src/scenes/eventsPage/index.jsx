@@ -82,8 +82,10 @@ const EventsPage = () => {
       const flyers = upcomingEvents[currentUpcomingIndex]?.flyers || [];
       setUpcomingImageIndex((prev) => (prev + 1) % flyers.length);
     } else {
+      const flyers = pastEvents[currentPastIndex]?.flyers || [];
       const photos = pastEvents[currentPastIndex]?.photos || [];
-      setPastImageIndex((prev) => (prev + 1) % photos.length);
+      const combined = [...flyers, ...photos];
+      setPastImageIndex((prev) => (prev + 1) % combined.length);
     }
   };
 
@@ -92,8 +94,10 @@ const EventsPage = () => {
       const flyers = upcomingEvents[currentUpcomingIndex]?.flyers || [];
       setUpcomingImageIndex((prev) => (prev - 1 + flyers.length) % flyers.length);
     } else {
+      const flyers = pastEvents[currentPastIndex]?.flyers || [];
       const photos = pastEvents[currentPastIndex]?.photos || [];
-      setPastImageIndex((prev) => (prev - 1 + photos.length) % photos.length);
+      const combined = [...flyers, ...photos];
+      setPastImageIndex((prev) => (prev - 1 + combined.length) % combined.length);
     }
   };
   
@@ -347,76 +351,83 @@ const EventsPage = () => {
             height: isNonMobileScreens ? "400px" : "auto"
           }}>
             <Box sx={{ width: isNonMobileScreens ? "70%" : "100%", height: "100%" }}>
-              {pastEvents[currentPastIndex]?.photos?.length > 0 && (
-                <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
-                  <IconButton
-                    onClick={() => handlePrevImage("past")}
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: 0,
-                      transform: "translateY(-50%)",
-                      zIndex: 2,
-                      backgroundColor: "rgba(0,0,0,0.5)",
-                      color: "#fff",
-                      "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" }
-                    }}
-                  >
-                    <ArrowBackIos fontSize="small" />
-                  </IconButton>
+            {(pastEvents[currentPastIndex]?.flyers?.length > 0 || pastEvents[currentPastIndex]?.photos?.length > 0) && (() => {
+                const flyers = pastEvents[currentPastIndex]?.flyers || [];
+                const photos = pastEvents[currentPastIndex]?.photos || [];
+                const combined = [...flyers, ...photos];
+                const currentImage = combined[pastImageIndex] || "";
 
+                return (
                   <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
-                  {/* Background Image - Zoomed Out & Blurred */}
-                  <Box
-                    component="img"
-                    src={`${BASE_URL}/${(pastEvents[currentPastIndex]?.photos[pastImageIndex] || '').replace(/public\\assets\\/g, "assets/")}`}
-                    alt="Flyer"
-                    sx={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      zIndex: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "conver",
-                      pointerEvents: "none",
-                      filter: "blur(10px) brightness(0.8)",
-                    }}
-                  />
+                    <IconButton
+                      onClick={() => handlePrevImage("past")}
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: 0,
+                        transform: "translateY(-50%)",
+                        zIndex: 2,
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                        color: "#fff",
+                        "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" }
+                      }}
+                    >
+                      <ArrowBackIos fontSize="small" />
+                    </IconButton>
 
-                  {/* Foreground Image - Full View */}
-                  <Box
-                    component="img"
-                    src={`${BASE_URL}/${(pastEvents[currentPastIndex]?.photos[pastImageIndex] || '').replace(/public\\assets\\/g, "assets/")}`}
-                    alt="Flyer"
-                    sx={{
-                      position: "relative",
-                      zIndex: 1,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      pointerEvents: "none",
-                    }}
-                  />
-                </Box>
+                    <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
+                      {/* Blurred background image */}
+                      <Box
+                        component="img"
+                        src={`${BASE_URL}/${currentImage.replace(/public\\assets\\/g, "assets/")}`}
+                        alt="Event Media"
+                        sx={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          zIndex: 0,
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          pointerEvents: "none",
+                          filter: "blur(10px) brightness(0.8)",
+                        }}
+                      />
+                      {/* Foreground image */}
+                      <Box
+                        component="img"
+                        src={`${BASE_URL}/${currentImage.replace(/public\\assets\\/g, "assets/")}`}
+                        alt="Event Media"
+                        sx={{
+                          position: "relative",
+                          zIndex: 1,
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                          pointerEvents: "none",
+                        }}
+                      />
+                    </Box>
 
-                  <IconButton
-                    onClick={() => handleNextImage("past")}
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      right: 0,
-                      transform: "translateY(-50%)",
-                      zIndex: 2,
-                      backgroundColor: "rgba(0,0,0,0.5)",
-                      color: "#fff",
-                      "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" }
-                    }}
-                  >
-                    <ArrowForwardIos fontSize="small" />
-                  </IconButton>
-                </Box>
-              )}
+                    <IconButton
+                      onClick={() => handleNextImage("past")}
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        right: 0,
+                        transform: "translateY(-50%)",
+                        zIndex: 2,
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                        color: "#fff",
+                        "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" }
+                      }}
+                    >
+                      <ArrowForwardIos fontSize="small" />
+                    </IconButton>
+                  </Box>
+                );
+              })()}
+
             </Box>
 
             <CardContent sx={{ width: isNonMobileScreens ? "30%" : "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
