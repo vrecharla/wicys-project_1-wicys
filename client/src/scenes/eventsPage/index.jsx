@@ -30,6 +30,7 @@ const EventsPage = () => {
   const dark = palette.neutral.dark;
   const primary = palette.primary.main;
   const token = useSelector((state) => state.token);
+  const toUTCDateString = (date) => new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()).toISOString().split("T")[0];
   
   useEffect(() => {
     fetchEvents();
@@ -241,10 +242,21 @@ const EventsPage = () => {
             )}
             </Box>
 
-            <CardContent sx={{ width: isNonMobileScreens ? "30%" : "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-              <Typography variant="h6">{upcomingEvents[currentUpcomingIndex]?.title}</Typography>
-              <Typography variant="body2">{upcomingEvents[currentUpcomingIndex]?.description}</Typography>
-              <Typography variant="body2">{new Date(upcomingEvents[currentUpcomingIndex]?.date).toLocaleDateString()}</Typography>
+            <CardContent sx={{ width: isNonMobileScreens ? "30%" : "100%", display: "flex", flexDirection: "column", ml:2, gap:2}}>
+              <Typography variant="h4" fontWeight={500}>{upcomingEvents[currentUpcomingIndex]?.title}</Typography>
+              <Typography variant="h6">{new Date(upcomingEvents[currentUpcomingIndex]?.date).toLocaleDateString("en-US", {timeZone: "UTC", year: "numeric", month: "long", day: "numeric", })}</Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  display: "-webkit-box",
+                  overflow: "hidden",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: 5, // Limits the description to 5 lines
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {upcomingEvents[currentUpcomingIndex]?.description}
+              </Typography>            
               <Box mt={2}>
                 <Link to={`/event/${upcomingEvents[currentUpcomingIndex]?._id}`}>
                   <Button sx={{ ml: 1 }} variant="outlined">More Info</Button>
@@ -430,10 +442,21 @@ const EventsPage = () => {
 
             </Box>
 
-            <CardContent sx={{ width: isNonMobileScreens ? "30%" : "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-              <Typography variant="h6">{pastEvents[currentPastIndex]?.title}</Typography>
-              <Typography variant="body2">{pastEvents[currentPastIndex]?.description}</Typography>
-              <Typography variant="body2">{new Date(pastEvents[currentPastIndex]?.date).toLocaleDateString()}</Typography>
+            <CardContent sx={{ width: isNonMobileScreens ? "30%" : "100%", display: "flex", flexDirection: "column", ml:2, gap:2}}>
+              <Typography variant="h4" fontWeight={500}>{pastEvents[currentPastIndex]?.title}</Typography>
+              <Typography variant="h6">{new Date(pastEvents[currentPastIndex]?.date).toLocaleDateString("en-US", {timeZone: "UTC", year: "numeric", month: "long", day: "numeric", })}</Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  display: "-webkit-box",
+                  overflow: "hidden",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: 5, // Limits the description to 5 lines
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {pastEvents[currentPastIndex]?.description}
+              </Typography>   
               <Box mt={2}>
                 <Link to={`/event/${pastEvents[currentPastIndex]?._id}`}>
                   <Button sx={{ ml: 1 }} variant="outlined">More Info</Button>
@@ -541,9 +564,11 @@ const EventsPage = () => {
               <Calendar
                 onClickDay={(date) => setSelectedDate(date)}
                 tileContent={({ date }) => {
-                  const event = calendarEvents.find(
-                    (e) => new Date(e.date).toDateString() === date.toDateString()
-                  );
+                  
+              const target = toUTCDateString(date);
+    const event = calendarEvents.find(
+      (e) => toUTCDateString(new Date(e.date)) === target
+    );
                   return event ? (
                     <Typography fontSize={10} color="primary">
                       {event.title}
@@ -555,22 +580,33 @@ const EventsPage = () => {
             </Box>
 
             <Box sx={{ width: isNonMobileScreens ? "50%" : "100%", p: 2, border: `1px solid ${dark}`, borderRadius: 2 }}>
-              {calendarEvents.some(e => new Date(e.date).toDateString() === selectedDate.toDateString()) ? (
+              {calendarEvents.some(e => toUTCDateString(new Date(e.date)) === toUTCDateString(selectedDate)) ? (
                 calendarEvents
-                  .filter(e => new Date(e.date).toDateString() === selectedDate.toDateString())
+                  .filter(e => toUTCDateString(new Date(e.date)) === toUTCDateString(selectedDate))
                   .map((event, index) => (
                     <Card key={index} sx={{ mb: 2 }}>
                       <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                         <Box>
                         <Typography variant="h6">{event.title}</Typography>
-                        <Typography variant="body2">{event.description}</Typography>
-                        <Typography variant="caption">
-                          {new Date(event.date).toLocaleDateString()}
+                        <Typography variant="h6">
+                          {new Date(event.date).toLocaleDateString("en-US", {timeZone: "UTC", year: "numeric", month: "long", day: "numeric", })}
                         </Typography>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                              display: "-webkit-box",
+                              overflow: "hidden",
+                              WebkitBoxOrient: "vertical",
+                              WebkitLineClamp: 1, // Limits the description to 5 lines
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {event.description}
+                          </Typography>
                         </Box>
                         <Box>
                           <Link to={`/event/${event._id}`}>
-                            <Button sx={{ ml: 1 }} variant="outlined">More Info</Button>
+                            <Button sx={{ ml: 1, whiteSpace: "nowrap" }} variant="outlined">More Info</Button>
                           </Link>
                         </Box>
                       </CardContent>

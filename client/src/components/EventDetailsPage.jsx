@@ -261,7 +261,7 @@ const EventDetailsPage = () => {
             {event.title}
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
-            {new Date(event.date).toLocaleDateString()}
+            {new Date(event.date).toLocaleDateString("en-US", {timeZone: "UTC", year: "numeric", month: "long", day: "numeric", })}
           </Typography>
         </WidgetWrapper>
 

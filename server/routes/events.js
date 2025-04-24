@@ -148,7 +148,9 @@ router.get('/get/:id', async (req, res) => {
 ------------------------------------ */
 router.get('/upcoming', async (req, res) => {
   try {
-    const upcomingEvents = await Event.find({ date: { $gte: new Date() } }).sort({ date: 1 });
+    const today = new Date();
+    const midnightTodayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+    const upcomingEvents = await Event.find({ date: { $gte: midnightTodayUTC } }).sort({ date: 1 });
     res.status(200).json(upcomingEvents);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -165,9 +167,11 @@ router.get('/past', async (req, res) => {
 
     const startOfYear = new Date(year, 0, 1); // January 1st, 00:00:00
     const endOfYear = new Date(year, 11, 31, 23, 59, 59); // December 31st, 23:59:59
+    const today = new Date();
+    const midnightTodayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
 
     const pastEvents = await Event.find({ 
-      date: { $lt: new Date(), $gte: startOfYear, $lte: endOfYear } 
+      date: { $lt: midnightTodayUTC, $gte: startOfYear, $lte: endOfYear } 
     }).sort({ date: -1 });
 
     res.status(200).json(pastEvents);
